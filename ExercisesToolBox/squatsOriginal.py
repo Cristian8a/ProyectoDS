@@ -7,13 +7,17 @@ mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
 class PoseStateMemento:
+    '''Clase Memento para guardar el estado de la clase PoseDetector
+    Crea un nuevo objeto para guardar el estado actual de la pose'''
     def __init__(self, up, down, count):
         self.up = up
         self.down = down
         self.count = count
 
 class PoseDetector:
-    def __init__(self, video_path, new_width=700, new_height=800):
+    '''Inicializa el detector de poses con el video proporcionado 
+    y las dimensiones de la imagen'''
+    def __init__(self, video_path, new_width=750, new_height=800):
         self.video_path = video_path
         self.new_width = new_width
         self.new_height = new_height
@@ -23,6 +27,7 @@ class PoseDetector:
         self.mp_pose = mp.solutions.pose
 
     def start_detection(self):
+        '''Comienza la detección de poses en el video proporcionado'''
         cap = cv2.VideoCapture(self.video_path)
         with self.mp_pose.Pose(static_image_mode=False) as pose:
             while True:
@@ -55,11 +60,11 @@ class PoseDetector:
                     l3 = np.linalg.norm(p1 - p2)
 
                     angle = degrees(acos((l1**2 + l3**2 - l2**2) / (2 * l1 * l3)))
-                    if angle >= 160:
+                    if angle >= 140:
                         self.up = True
                     if self.up and not self.down and angle <= 70:
                         self.down = True
-                    if self.up and self.down and angle >= 160:
+                    if self.up and self.down and angle >= 140:
                         self.count += 1
                         self.up = False
                         self.down = False
@@ -71,7 +76,7 @@ class PoseDetector:
 
                     contours = np.array([[x1, y1], [x2, y2], [x3, y3]])
 
-                    cv2.fillPoly(aux_image, pts=[contours], color=(128, 0, 250))
+                    cv2.fillPoly(aux_image, pts=[contours], color=(0, 0, 255))
 
                     output = cv2.addWeighted(frame, 1, aux_image, 0.8, 0)
 
@@ -79,10 +84,10 @@ class PoseDetector:
                     cv2.circle(output, (x2, y2), 6, (128, 0, 250), 4)
                     cv2.circle(output, (x3, y3), 6, (255, 191, 0), 4)
 
-                    cv2.rectangle(output, (0, 0), (60, 60), (255, 255, 0), -1)
+                    cv2.rectangle(output, (0, 0), (60, 60), (0, 0, 255), -1)
 
                     cv2.putText(output, str(int(angle)), (x2 + 30, y2), 1, 1.5, (128, 0, 250), 2)
-                    cv2.putText(output, str(self.count), (10, 50), 1, 3.5, (128, 0, 250), 2)
+                    cv2.putText(output, str(self.count), (10, 50), 1, 3.5, (255, 255, 0), 2)
 
                     cv2.imshow("output", output)
 
@@ -91,31 +96,40 @@ class PoseDetector:
                 if cv2.waitKey(1) & 0xFF == 27:
                     break
 
+                if cv2.waitKey(1) & 0xff == ord('q'):
+                    break
+
         cap.release()
         cv2.destroyAllWindows()
 
     def save_state(self):
+        '''Guarda el estado actual de detección'''
         return PoseStateMemento(self.up, self.down, self.count)
 
     def restore_state(self, memento):
+        '''Restaura el estado de detección a un estado anterior'''
         self.up = memento.up
         self.down = memento.down
         self.count = memento.count
 
 class PoseDetectorCaretaker:
+    '''Inicializa el objeto Caretaker para guardar los mementos'''
     def __init__(self):
         self.mementos = []
 
     def add_memento(self, memento):
+        '''Añade un memento a la lista de mementos'''
         self.mementos.append(memento)
 
     def get_memento(self, index):
+        '''Obtiene un memento de la lista de mementos por indice'''
         return self.mementos[index]
 
 # Uso del patrón Memento
 if __name__ == "__main__":
     caretaker = PoseDetectorCaretaker()
-    detector = PoseDetector("squats1.mp4")
+    detector = PoseDetector("SquatsRL.mp4")
+    # detector = PoseDetector("squats2.mp4")
     detector.start_detection()
 
     # Guardar el estado actual

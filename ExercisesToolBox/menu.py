@@ -8,7 +8,7 @@ def execute_script(exercise):
     elif exercise == "Sentadillas":
         exercise_script = "squatsOriginal.py"
     # else:
-        exercise_script = exercise #.lower().replace(" ", "_") + ".py"
+        # exercise_script = exercise #.lower().replace(" ", "_") + ".py"
     # exercise_path = os.path.join("ExercisesToolBox", exercise_script)  # Usar ruta relativa
 
     if os.path.exists(exercise_script):
@@ -25,12 +25,12 @@ def main():
 
     root = tk.Tk()
     root.title("Selector de Ejercicios")
-    root.geometry("400x300")
+    root.geometry("800x700")
 
-    label = tk.Label(root, text="Seleccione el ejercicio que desea detectar:", font=("Arial", 14), fg="blue")
+    label = tk.Label(root, text="Seleccione el ejercicio que desea detectar:", font=("Arial", 18), fg="black")
     label.pack(pady=10)
 
-    listbox = tk.Listbox(root, font=("Arial", 12), selectbackground="lightblue")
+    listbox = tk.Listbox(root, font=("Arial", 18), fg="grey", selectbackground="lightblue")
     for option in options:
         listbox.insert(tk.END, option)
     listbox.pack(pady=5)
@@ -41,7 +41,7 @@ def main():
             selected_option = options[selected_index[0]]
             execute_script(selected_option)
 
-    button = tk.Button(root, text="Ejecutar", font=("Arial", 12), bg="green", fg="white", command=on_select)
+    button = tk.Button(root, text="Ejecutar", font=("Arial", 15), bg="green", fg="white", command=on_select)
     button.pack(pady=5)
 
     root.mainloop()
