@@ -128,7 +128,9 @@ class PoseDetectorCaretaker:
 # Uso del patrón Memento
 if __name__ == "__main__":
     caretaker = PoseDetectorCaretaker()
-    detector = PoseDetector("SquatsRL.mp4")
+    # detector = PoseDetector(cv2.VideoCapture(0,cv2.CAP_DSHOW))
+    # detector = PoseDetector("SquatsRL.mp4")
+    detector = PoseDetector("SquatsRL2.mp4")
     # detector = PoseDetector("squats2.mp4")
     detector.start_detection()
 
