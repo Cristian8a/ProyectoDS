@@ -17,6 +17,7 @@ class PoseDetector:
         self.video_path = video_path
         self.start = 0 
         self.cnt = 0
+        self.np_drawing = mp.solutions.drawing_utils
         self.np_pose = mp.solutions.pose
 
     def start_detection(self):
@@ -47,11 +48,13 @@ class PoseDetector:
                     rightShoulder = (int(results.pose_landmarks.landmark[12].x*image_width),
                                     int(results.pose_landmarks.landmark[12].y*image_heigth))
         
-                    if self.distancia_euc(rightShoulder, rightWrist) < 2:
+                    if self.distancia_euc(rightShoulder, rightWrist) < 245:
                         self.start = 1
-                    elif self.start and self.distancia_euc(rightShoulder, rightWrist) > 3:
+                    elif self.start and self.distancia_euc(rightShoulder, rightWrist) > 460:
                         self.cnt += 1
                         self.start = 0
+
+                    self.np_drawing.draw_landmarks(img, results.pose_landmarks, self.np_pose.POSE_CONNECTIONS)  # Corregir aquí
 
                     # Dibujar círculos más pequeños
                     cv2.circle(img, rightWrist, 6, (0,255,255), 10)
@@ -113,7 +116,7 @@ class PoseDetectorCaretaker:
 # Uso del patrón Memento
 if  __name__ == "__main__":
     caretaker = PoseDetectorCaretaker()
-    detector = PoseDetector("PU.mp4")
+    detector = PoseDetector("PU_RL.mp4")
     detector.start_detection()
 
     # Guardar el estado actual
